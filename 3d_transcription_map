@@ -14,22 +14,25 @@
         -exp FILE, --gene_expression FILE     Path to the file containing the gene expression
                                               values in different conditions.
                                               [default: data/profiles_Otto2010.min]
-        -n INT, --nb_bins INT                   Indicates the number of bins nearby
-                                                to take into account.
-                                                [default: 1]
-        -o PATH, --output PATH                  Path to the directory containing
-                                                the result files (scores and pdb).
-                                                [default: res]
+        -n INT, --nb_bins INT                 Indicates the number of bins nearby
+                                              to take into account.
+                                              [default: 1]
+        -o PATH, --output PATH                Path to the directory containing
+                                              the result files (scores and pdb).
+                                              [default: res]
 """
 
 # Third-party modules
+from multiprocessing import Pool, cpu_count
+from functools import partial
+from tqdm import tqdm
 from docopt import docopt
 from schema import Schema, And, Use, SchemaError
 import numpy as np
 
 # Local modules
 import src.parsing as parsing
-import src.calculation as calculation
+from src.chromosome import process
 
 
 def check_args():
@@ -67,9 +70,26 @@ if __name__ == "__main__":
 
     ### Parse data files
     ####################
-    GENES = parsing.parse_gene_coordinates(GENE_COORDINATES_FILE)
+    CHROMOSOMES_LIST = parsing.parse_gene_coordinates(GENE_COORDINATES_FILE)
 
 
     ### Main calculations
     #####################
-    DISTANCES_MATRIX = calculation.calculate_distances_matrix(GENES)
+    # Parallelization of the main loop:
+    POOL = Pool(processes=cpu_count())
+    func = partial(process)
+    # tqdm module enables an ETA progress bar of chromosomes
+    # imap_unordered can smooth things out by yielding faster-calculated values
+    # ahead of slower-calculated values.
+    print("\nProcessing ...\n")
+    RESULTS = [chromosome for chromosome in tqdm(POOL.imap_unordered(func,\
+               CHROMOSOMES_LIST), total=len(CHROMOSOMES_LIST))]
+    POOL.close()
+    POOL.join()
+
+    # dist, chromo = RESULTS[0]
+
+    # for i in range(len(dist)):
+    #     for j in range(len(dist)):
+    #         print("{}".format(dist[i, j]), end=" ")
+    #     print()

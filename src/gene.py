@@ -14,26 +14,24 @@ class Gene:
 
     Attributes:
         name: Name of the gene
-        chr: Chromosome corresponding
         coords: X, Y, Z coordinates
     """
-    __slots__ = ("name", "chr", "coords")
+    __slots__ = ("name", "coords")
 
-    def __init__(self, name, chromosome, coords):
+    def __init__(self, name, coords):
         self.name = name
-        self.chr = chromosome
         self.coords = coords
 
     def __str__(self):
-        return self.name + " " + self.chr + " " + str(self.coords)
+        return self.name + " " + str(self.coords)
 
     def calculate_distance(self, gene):
         """
-            Calculate Euclidian distance between two residues with THE most efficient method.
+            Calculate Euclidian distance between two genes.
             Formula: distance = sqrt((xa-xb)**2 + (ya-yb)**2 + (za-zb)**2)
 
             Args:
-                residue (object): An object of the Residue class.
+                gene (object): An object of the Gene class.
 
             Returns:
                 dist (float): The calculated distance.
