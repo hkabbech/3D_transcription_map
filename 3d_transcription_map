@@ -10,10 +10,10 @@
         -h, --help                          Show this.
         -c FILE, --gene_coordinates FILE    Path to the file containing informations
                                             about 3D coordinates of the genes.
-                                            [default: data/toy_ex_coord.txt]
+                                            [default: data/SCHIZONTS.genes_pos.txt]
         -e FILE, --gene_expression FILE     Path to the file containing the gene expression
                                             values in different conditions.
-                                            [default: data/toy_ex_profiles.txt]
+                                            [default: data/profiles_Otto2010.min]
         -n INT, --nb_close_genes INT        Indicates the number of genes nearby
                                             to take into account.
                                             [default: 10]
@@ -81,15 +81,25 @@ if __name__ == "__main__":
     ###############
     COORDINATES = pd.read_csv(GENE_COORDINATES_FILE, sep='\t')
     EXPRESSIONS = pd.read_csv(GENE_EXPRESSION_FILE, sep='\t')
-    CORRELATIONS = EXPRESSIONS.transpose().corr(method="spearman")
-    print('correlations done')
+
+
+    DISTANCES_PATH = 'data/distances.csv'
+    CORRELATIONS_PATH = 'data/correlations.csv'
+
+    if not os.path.isfile(DISTANCES_PATH):
+        calculation.calculate_distance_matrix(COORDINATES, DISTANCES_PATH)
+    DISTANCES = pd.read_csv(DISTANCES_PATH, index_col=0)
+
+    if not os.path.isfile(CORRELATIONS_PATH):
+        calculation.calculate_correlation_matrix(EXPRESSIONS, CORRELATIONS_PATH)
+    CORRELATIONS =  pd.read_csv(CORRELATIONS_PATH, index_col=0)
 
 
     ### Main calculations
     #####################
     # Parallelization of the main loop
     with Pool(processes=NB_PROC) as pool:
-        FUNC = partial(calculation.calculate_transcription_map, COORDINATES,
+        FUNC = partial(calculation.calculate_transcription_map, DISTANCES,
                        CORRELATIONS, NB_CLOSE_GENES)
         os.system("clear")
         print("\n" + str(cpu_count()) + " cpus detected, using " + str(NB_PROC))
@@ -97,8 +107,10 @@ if __name__ == "__main__":
         TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORDINATES.index),\
                             total=len(COORDINATES.index))]
 
+    print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
+
     ### 3D plot
     ###########
-    visualization.visualize_4d_genome(TRANSCRIPTION_MAP, COORDINATES)
+    visualization.visualize_4d_genome(TRANSCRIPTION_MAP, COORDINATES,  colors_map="autumn")
 
-    print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
+    
