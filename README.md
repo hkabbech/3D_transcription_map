@@ -1,4 +1,4 @@
-# 3D Transcription map
+# 3D Transcription map
 
 ## Installation
 
