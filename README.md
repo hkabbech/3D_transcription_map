@@ -46,5 +46,5 @@ Genome of Plasmodium falciparum
 ```
 
 ## Author
-Hélène Kabbech ~ Bioinformatics master student at Paris Diderot University
-Costas Bouyioukos ~ Supervisor
+- Hélène Kabbech ~ Bioinformatics master student at Paris Diderot University
+- Costas Bouyioukos ~ Supervisor
