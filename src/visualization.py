@@ -4,10 +4,11 @@
 """
 
 # Third-party modules
-# import plotly.plotly as py
 import os
 import plotly
 import plotly.graph_objs as go
+# import plotly.plotly as py
+# plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
 
 def visualize_4d_genome(coordinates, transcription_map, colors_map='Reds'):
     """
