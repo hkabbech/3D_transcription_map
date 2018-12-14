@@ -71,15 +71,18 @@ if __name__ == "__main__":
     CLOSEST_GENES = int(ARGUMENTS["--closest_genes"])
     CPU = cpu_count() if int(ARGUMENTS["--cpu"]) == 0 else int(ARGUMENTS["--cpu"])
 
-
+    # COORD_FILE = "data/toy_ex_coord.txt"
+    # EXP_FILE = "data/toy_ex_profiles.txt"
+    # CLOSEST_GENES = 10
+    # CPU = 4
 
     ### Data frames
     ###############
     COORD = pd.read_csv(COORD_FILE, sep='\t')
     EXP = pd.read_csv(EXP_FILE, sep='\t')
+    print("Processing correlation matrix...")
     CORR = EXP.transpose().corr(method="spearman")
-    print('correlations done')
-
+    print("done.")
 
     ### Main calculations
     #####################
@@ -95,6 +98,6 @@ if __name__ == "__main__":
 
     ### 3D plot
     ###########
-    visualization.visualize_4d_genome(TRANSCRIPTION_MAP, COORD)
+    visualization.visualize_4d_genome(COORD, TRANSCRIPTION_MAP)
 
     print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
