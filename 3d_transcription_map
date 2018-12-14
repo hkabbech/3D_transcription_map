@@ -45,7 +45,7 @@ def check_args():
         # '--closest_genes': And(Use(int), lambda n: 0 <= n <= 100,\
         #                     error='--closest_genes should be integer 0 <= n <= 100'),
         '--cpu': And(Use(int), lambda n: 0 <= n <= cpu_count(),
-                 error='--cpus=NUM should be integer 1 <= N <= ' + str(cpu_count())),
+                     error='--cpus=NUM should be integer 1 <= N <= ' + str(cpu_count())),
         # The output PATH is created (if not exists) at the end of the program
         # so we skip the check.
         object: object})
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     ###############
     COORD = pd.read_csv(COORD_FILE, sep='\t')
     EXP = pd.read_csv(EXP_FILE, sep='\t')
-    print("Processing correlation matrix...")
+    print("\n\nProcessing correlation matrix... ", end="")
     CORR = EXP.transpose().corr(method="spearman")
     print("done.")
 
@@ -90,11 +90,11 @@ if __name__ == "__main__":
     with Pool(processes=CPU) as pool:
         FUNC = partial(calculation.calculate_transcription_map, COORD,
                        CORR, CLOSEST_GENES)
-        os.system("clear")
+        print("\nProcessing on genes...")
         print("\n" + str(cpu_count()) + " cpus detected, using " + str(CPU))
-        print("\n\nProcessing ...\n")
         TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORD.index),\
                             total=len(COORD.index))]
+        print("done.")
 
     ### 3D plot
     ###########
