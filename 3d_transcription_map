@@ -101,3 +101,15 @@ if __name__ == "__main__":
     visualization.visualize_4d_genome(COORD, TRANSCRIPTION_MAP)
 
     print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
+
+
+    ## ENRICHMENT
+    #############
+    # import gseapy as gp
+    # glist = COORD.index.tolist()
+
+    # enr = gp.enrichr(gene_list=glist,
+    #                  description='pathway_analysis',
+    #                  gene_set='KEGG_2016',
+    #                  outdir='test',
+    #                 )
