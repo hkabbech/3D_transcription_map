@@ -3,7 +3,7 @@
 
 """
     Usage:
-        ./3d_transcription_map COORD EXP [--closest_genes INT] [--cpu INT]
+        ./3d_transcription_map COORD EXP [--nb_genes INT] [--cpu INT]
 
     Arguments:
         COORD                               Path to the file containing informations
@@ -12,9 +12,8 @@
                                             values in different conditions.
     Options:
         -h, --help                          Show this.
-        -n INT, --closest_genes INT         Indicates the number of genes nearby
-                                            to take into account.
-                                            [default: 10]
+        -n INT, --nb_genes INT              Indicates the number of genes nearby
+                                            to take into account. [default: 10]
         -c NUM, --cpu NUM                   Number of cpus to use for parallelisation. By default
                                             using all available (0).
                                             [default: 0]
@@ -42,11 +41,10 @@ def check_args():
     schema = Schema({
         'COORD': Use(open, error='Gene coordinate file should be readable.'),
         'EXP': Use(open, error='Gene expression file should be readable.'),
-        # '--closest_genes': And(Use(int), lambda n: 0 <= n <= 100,\
-        #                     error='--closest_genes should be integer 0 <= n <= 100'),
+        # '--nb_genes': And(Use(int), lambda n: 1 <= n <= 100,\
+        #                     error='--nb_genes should be integer 1 <= n <= 100'),
         '--cpu': And(Use(int), lambda n: 0 <= n <= cpu_count(),
-                     error='--cpus=NUM should be integer 1 <= N <= ' + str(cpu_count())),
-        # The output PATH is created (if not exists) at the end of the program
+                     error='--cpus should be integer 1 <= n <= ' + str(cpu_count())),
         # so we skip the check.
         object: object})
     try:
@@ -68,12 +66,12 @@ if __name__ == "__main__":
 
     COORD_FILE = ARGUMENTS["COORD"]
     EXP_FILE = ARGUMENTS["EXP"]
-    CLOSEST_GENES = int(ARGUMENTS["--closest_genes"])
+    NB_GENES = int(ARGUMENTS["--nb_genes"])
     CPU = cpu_count() if int(ARGUMENTS["--cpu"]) == 0 else int(ARGUMENTS["--cpu"])
 
     # COORD_FILE = "data/toy_ex_coord.txt"
     # EXP_FILE = "data/toy_ex_profiles.txt"
-    # CLOSEST_GENES = 10
+    # NB_GENES = 10
     # CPU = 4
 
     ### Data frames
@@ -89,7 +87,7 @@ if __name__ == "__main__":
     # Parallelization of the main loop
     with Pool(processes=CPU) as pool:
         FUNC = partial(calculation.calculate_transcription_map, COORD,
-                       CORR, CLOSEST_GENES)
+                       CORR, NB_GENES)
         print("\nProcessing on genes...")
         print("\n" + str(cpu_count()) + " cpus detected, using " + str(CPU))
         TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORD.index),\
