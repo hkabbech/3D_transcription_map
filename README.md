@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ### Example
 Genome of Plasmodium falciparum
 ```
-./3d_transcription_map data/plasmodium_falciparum_coord.txt data/plasmodium_falciparum_exp.min
+./3d_transcription_map data/plasmodium_falciparum/coord.txt data/plasmodium_falciparum/exp.txt -o result/plasmodium_falciparum
 ```
 
 ### Get help
