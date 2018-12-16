@@ -10,9 +10,10 @@ import plotly.graph_objs as go
 # import plotly.plotly as py
 # plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
 
-def visualize_4d_genome(coordinates, transcription_map, colors_map='Reds'):
+def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map='Reds'):
     """
-    Plot a 3D visualization of the genes colored by their transcription map.
+    Plot a 3D interactive visualization of the genes colored by their transcription map.
+    The interactive plot is saved in an html format.
 
     Args:
         coordinates (Pandas Dataframe): X, Y, Z Coordinates of the genes
@@ -29,9 +30,10 @@ def visualize_4d_genome(coordinates, transcription_map, colors_map='Reds'):
             color=transcription_map,
             colorscale=colors_map,
             opacity=0.8,
-            showscale=True
+            showscale=True,
         ),
-        text="gene: " + coordinates.index + "<br>chr: " + coordinates[' chr']
+        text='gene: ' + coordinates.index + '<br>chr: ' + coordinates[' chr'],
+        hoverinfo='text'
     )
 
     layout = go.Layout(
@@ -45,5 +47,5 @@ def visualize_4d_genome(coordinates, transcription_map, colors_map='Reds'):
     )
     fig = go.Figure(data=[trace], layout=layout)
     # py.iplot(fig, filename='3d transcription map')
-    os.makedirs('result', exist_ok=True)
-    plotly.offline.plot(fig, filename='result/3d_transcription_map.html')
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    plotly.offline.plot(fig, filename=output_path)

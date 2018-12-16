@@ -3,20 +3,22 @@
 
 """
     Usage:
-        ./3d_transcription_map COORD EXP [--nb_genes INT] [--cpu INT]
+        ./3d_transcription_map COORD EXP [--nb_genes INT] [--cpu INT] [--output PATH]
 
     Arguments:
-        COORD                               Path to the file containing informations
-                                            about 3D coordinates of the genes.
-        EXP                                 Path to the file containing the gene expression
-                                            values in different conditions.
+        COORD                           Path to the file containing informations
+                                        about 3D coordinates of the genes.
+        EXP                             Path to the file containing the gene expression
+                                        values in different conditions.
     Options:
-        -h, --help                          Show this.
-        -n INT, --nb_genes INT              Indicates the number of genes nearby
-                                            to take into account. [default: 10]
-        -c NUM, --cpu NUM                   Number of cpus to use for parallelisation. By default
-                                            using all available (0).
-                                            [default: 0]
+        -h, --help                      Show this.
+        -n INT, --nb_genes INT          Indicates the number of genes nearby
+                                        to take into account. [default: 10]
+        -c INT, --cpu INT               Number of cpus to use for parallelisation. By default
+                                        using all available (0).
+                                        [default: 0]
+        -o PATH, --output Path          Path to the generated plot (html format).
+                                        [default: result/plot.html]
 """
 
 # Third-party modules
@@ -68,6 +70,7 @@ if __name__ == "__main__":
     EXP_FILE = ARGUMENTS["EXP"]
     NB_GENES = int(ARGUMENTS["--nb_genes"])
     CPU = cpu_count() if int(ARGUMENTS["--cpu"]) == 0 else int(ARGUMENTS["--cpu"])
+    OUTPUT_PATH = ARGUMENTS["--output"]
 
     # COORD_FILE = "data/toy_ex_coord.txt"
     # EXP_FILE = "data/toy_ex_profiles.txt"
@@ -88,15 +91,15 @@ if __name__ == "__main__":
     with Pool(processes=CPU) as pool:
         FUNC = partial(calculation.calculate_transcription_map, COORD,
                        CORR, NB_GENES)
-        print("\nProcessing on genes...")
-        print("\n" + str(cpu_count()) + " cpus detected, using " + str(CPU))
+        print("\nProcessing on genes... ({} cpus detected, using {})".format(str(cpu_count()), str(CPU)))
         TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORD.index),\
                             total=len(COORD.index))]
-        print("done.")
 
     ### 3D plot
     ###########
-    visualization.visualize_4d_genome(COORD, TRANSCRIPTION_MAP)
+    print('\nGeneration of the 3D interactive plot... ', end="")
+    visualization.visualize_4d_genome(COORD, TRANSCRIPTION_MAP, OUTPUT_PATH)
+    print('The plot is saved in {}'.format(OUTPUT_PATH))
 
     print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
 
