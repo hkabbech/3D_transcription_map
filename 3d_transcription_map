@@ -103,6 +103,7 @@ if __name__ == "__main__":
 
     print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
 
+    CORR.to_csv('result/correlation.csv')
 
     ## ENRICHMENT
     #############
