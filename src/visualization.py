@@ -7,8 +7,8 @@
 import os
 import plotly
 import plotly.graph_objs as go
-import plotly.plotly as py
-plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
+#import plotly.plotly as py
+#plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
 
 def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map='Cividis'):
     """
@@ -47,6 +47,6 @@ def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map=
         )
     )
     fig = go.Figure(data=[trace], layout=layout)
-    py.iplot(fig, filename='3D transcription map')
+    # py.iplot(fig, filename='3D transcription map')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plotly.offline.plot(fig, filename=output_path)

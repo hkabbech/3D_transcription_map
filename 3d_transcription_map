@@ -6,9 +6,9 @@
         ./3d_transcription_map COORDINATES EXPRESSIONS [--nb_genes INT] [--cpu INT] [--output PATH]
 
     Arguments:
-        COORDINATES                           Path to the file containing informations
+        COORDINATES                     Path to the file containing informations
                                         about 3D coordinates of the genes.
-        EXPRESSIONS                             Path to the file containing the gene expression
+        EXPRESSIONS                     Path to the file containing the gene expression
                                         values in different conditions.
     Options:
         -h, --help                      Show this.
@@ -18,7 +18,7 @@
                                         using all available (0).
                                         [default: 0]
         -o PATH, --output Path          Path to the generated plot (html format).
-                                        [default: result/plot.html]
+                                        [default: results/plot.html]
 """
 
 # Third-party modules
