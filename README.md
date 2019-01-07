@@ -1,5 +1,7 @@
 # 3D Transcription map
 
+This program allows to combine 3 dimensional architecture and transcriptional activity of a whole genome.
+
 ## Installation
 
 ### Clone the repository
