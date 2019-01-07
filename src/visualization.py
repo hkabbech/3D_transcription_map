@@ -7,10 +7,10 @@
 import os
 import plotly
 import plotly.graph_objs as go
-# import plotly.plotly as py
-# plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
+import plotly.plotly as py
+plotly.tools.set_credentials_file(username='kabhel', api_key='wqu9rTwIlkzLusElqKrg')
 
-def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map='Reds'):
+def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map='Cividis'):
     """
     Plot a 3D interactive visualization of the genes colored by their transcription map.
     The interactive plot is saved in an html format.
@@ -20,16 +20,17 @@ def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map=
         transcription_map (list): Transcription map for the studied genes
         colors_map (str): Chosen colors of the color bar. Default: Reds
     """
+
     trace = go.Scatter3d(
         x=coordinates['X'],
         y=coordinates['Y'],
         z=coordinates['Z'],
         mode='markers',
         marker=dict(
-            size=4,
+            size=3,
             color=transcription_map,
             colorscale=colors_map,
-            opacity=0.8,
+            opacity=1,
             showscale=True,
         ),
         text='gene: ' + coordinates.index + '<br>chr: ' + coordinates[' chr'],
@@ -37,7 +38,7 @@ def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map=
     )
 
     layout = go.Layout(
-        title="<b>3d Transcription Map</b>",
+        title="<b>3D Transcription Map</b>",
         margin=dict(
             l=65,
             r=50,
@@ -46,6 +47,6 @@ def visualize_4d_genome(coordinates, transcription_map, output_path, colors_map=
         )
     )
     fig = go.Figure(data=[trace], layout=layout)
-    # py.iplot(fig, filename='3d transcription map')
+    py.iplot(fig, filename='3D transcription map')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     plotly.offline.plot(fig, filename=output_path)
