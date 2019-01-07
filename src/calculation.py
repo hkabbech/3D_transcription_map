@@ -30,7 +30,16 @@ def calculate_transcription_map(coordinates, correlations, nb_genes, gene):
     # The distances are sorted and the n smallest are selected
     # The corresponding genes represent the closest genes of the current gene
     distances = distances.sort_values(ascending=True, na_position='last')
+
     closest_genes = distances[:nb_genes].index
-    # The transcription map is calculated for the closest genes
-    transcription_map = sum(abs(correlations[gene][closest_genes]))
-    return transcription_map
+    correlations_closest_genes = correlations[gene][closest_genes]
+    nb_nan = correlations_closest_genes.isna().sum()
+    nb_genes_without_nan = nb_genes - nb_nan
+
+    # All N closest genes have nan value
+    if nb_genes_without_nan == 0:
+        return np.nan
+    # The transcription map is calculated for the N closest genes
+    # All na values are replace by 0
+    else:
+        return sum(abs(correlations_closest_genes.fillna(0))) / nb_genes_without_nan
