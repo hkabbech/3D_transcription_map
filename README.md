@@ -10,16 +10,28 @@ cd 3D_transcription_map
 
 ### Requirements
 
+1. A linux distribution.
+
+2. The programming langage **Python3** and the following standard libraries :
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
+# This command will install the following modules:
+# docopt==0.6.2
+# numpy==1.15.2
+# pandas==0.23.4
+# schema==0.6.8
+# tqdm==4.28.1
+# plotly==3.4.2
 ```
 
 ## Run the program
 
-### Example
-Genome of Plasmodium falciparum
+The program takes in input a file containing the **3D coordinates** of a chromosome/genome for each genes and a file containing the gene **expression values** in different conditions. The generated interactive plot is in `html` format.
+
+### Toy example
+Chromosome 1 of the genome of *Plasmodium falciparum*
 ```
-./3d_transcription_map data/plasmodium_falciparum/coord.txt data/plasmodium_falciparum/exp.txt -o result/plasmodium_falciparum
+./3d_transcription_map data/toy_example_chr1/coordinates.txt data/toy_example_chr1/expressions.txt -o results/plot_chr1.html
 ```
 
 ### Get help
@@ -28,21 +40,22 @@ Genome of Plasmodium falciparum
 ./3d_transcription_map -h
 
     Usage:
-        ./3d_transcription_map COORD EXP [--closest_genes INT] [--cpu INT]
+        ./3d_transcription_map COORDINATES EXPRESSIONS [--nb_genes INT] [--cpu INT] [--output PATH]
 
     Arguments:
-        COORD                               Path to the file containing informations
-                                            about 3D coordinates of the genes.
-        EXP                                 Path to the file containing the gene expression
-                                            values in different conditions.
+        COORDINATES                     Path to the file containing informations
+                                        about 3D coordinates of the genes.
+        EXPRESSIONS                     Path to the file containing the gene expression
+                                        values in different conditions.
     Options:
-        -h, --help                          Show this.
-        -n INT, --closest_genes INT         Indicates the number of genes nearby
-                                            to take into account.
-                                            [default: 10]
-        -c NUM, --cpu NUM                   Number of cpus to use for parallelisation. By default
-                                            using all available (0).
-                                            [default: 0]
+        -h, --help                      Show this.
+        -n INT, --nb_genes INT          Indicates the number of genes nearby
+                                        to take into account. [default: 10]
+        -c INT, --cpu INT               Number of cpus to use for parallelisation. By default
+                                        using all available (0).
+                                        [default: 0]
+        -o PATH, --output Path          Path to the generated plot (html format).
+                                        [default: results/plot.html]
 ```
 
 ## Author
