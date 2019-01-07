@@ -41,5 +41,4 @@ def calculate_transcription_map(coordinates, correlations, nb_genes, gene):
         return np.nan
     # The transcription map is calculated for the N closest genes
     # All na values are replace by 0
-    else:
-        return sum(abs(correlations_closest_genes.fillna(0))) / nb_genes_without_nan
+    return sum(abs(correlations_closest_genes.fillna(0))) / nb_genes_without_nan
