@@ -22,7 +22,6 @@
 """
 
 # Third-party modules
-import os
 from multiprocessing import Pool, cpu_count
 from functools import partial
 from datetime import datetime
@@ -30,6 +29,7 @@ from tqdm import tqdm
 from docopt import docopt
 from schema import Schema, And, Use, SchemaError
 import pandas as pd
+import numpy as np
 
 # Local modules
 import src.calculation as calculation
@@ -77,7 +77,9 @@ if __name__ == "__main__":
     COORDINATES = pd.read_csv(COORDINATES_FILE, sep='\t')
     EXPRESSIONS = pd.read_csv(EXPRESSIONS_FILE, sep='\t')
     print("\n\nCalculation of the correlation matrix... ", end="")
-    CORRELATIONS = EXPRESSIONS.transpose().corr(method="spearman")
+    CORRELATIONS = pd.DataFrame(data=np.corrcoef(EXPRESSIONS),
+                                index=EXPRESSIONS.index,
+                                columns=EXPRESSIONS.index)
     print("done.")
 
     ### Main calculations
@@ -87,7 +89,8 @@ if __name__ == "__main__":
         FUNC = partial(calculation.calculate_transcription_map, COORDINATES,
                        CORRELATIONS, NB_GENES)
         print("\nCalculation of the transcription values : ")
-        print("\n     Processing on genes... ({} cpus detected, using {})".format(str(cpu_count()), str(CPU)))
+        print("\n     Processing on genes... ({} cpus detected, using {})"\
+            .format(str(cpu_count()), str(CPU)))
         TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORDINATES.index),\
                             total=len(COORDINATES.index))]
 
