@@ -3,12 +3,12 @@
 
 """
     Usage:
-        ./3d_transcription_map COORD EXP [--nb_genes INT] [--cpu INT] [--output PATH]
+        ./3d_transcription_map COORDINATES EXPRESSIONS [--nb_genes INT] [--cpu INT] [--output PATH]
 
     Arguments:
-        COORD                           Path to the file containing informations
+        COORDINATES                           Path to the file containing informations
                                         about 3D coordinates of the genes.
-        EXP                             Path to the file containing the gene expression
+        EXPRESSIONS                             Path to the file containing the gene expression
                                         values in different conditions.
     Options:
         -h, --help                      Show this.
@@ -41,8 +41,8 @@ def check_args():
         Checks and validates the types of inputs parsed by docopt from command line.
     """
     schema = Schema({
-        'COORD': Use(open, error='Gene coordinate file should be readable.'),
-        'EXP': Use(open, error='Gene expression file should be readable.'),
+        'COORDINATES': Use(open, error='Gene coordinate file should be readable.'),
+        'EXPRESSIONS': Use(open, error='Gene expression file should be readable.'),
         # '--nb_genes': And(Use(int), lambda n: 1 <= n <= 100,\
         #                     error='--nb_genes should be integer 1 <= n <= 100'),
         '--cpu': And(Use(int), lambda n: 0 <= n <= cpu_count(),
@@ -66,52 +66,35 @@ if __name__ == "__main__":
     # Check the types and ranges of the command line arguments parsed by docopt
     check_args()
 
-    COORD_FILE = ARGUMENTS["COORD"]
-    EXP_FILE = ARGUMENTS["EXP"]
+    COORDINATES_FILE = ARGUMENTS["COORDINATES"]
+    EXPRESSIONS_FILE = ARGUMENTS["EXPRESSIONS"]
     NB_GENES = int(ARGUMENTS["--nb_genes"])
     CPU = cpu_count() if int(ARGUMENTS["--cpu"]) == 0 else int(ARGUMENTS["--cpu"])
     OUTPUT_PATH = ARGUMENTS["--output"]
 
-    # COORD_FILE = "data/toy_ex_coord.txt"
-    # EXP_FILE = "data/toy_ex_profiles.txt"
-    # NB_GENES = 10
-    # CPU = 4
-
     ### Data frames
     ###############
-    COORD = pd.read_csv(COORD_FILE, sep='\t')
-    EXP = pd.read_csv(EXP_FILE, sep='\t')
-    print("\n\nProcessing correlation matrix... ", end="")
-    CORR = EXP.transpose().corr(method="spearman")
+    COORDINATES = pd.read_csv(COORDINATES_FILE, sep='\t')
+    EXPRESSIONS = pd.read_csv(EXPRESSIONS_FILE, sep='\t')
+    print("\n\nCalculation of the correlation matrix... ", end="")
+    CORRELATIONS = EXPRESSIONS.transpose().corr(method="spearman")
     print("done.")
 
     ### Main calculations
     #####################
     # Parallelization of the main loop
     with Pool(processes=CPU) as pool:
-        FUNC = partial(calculation.calculate_transcription_map, COORD,
-                       CORR, NB_GENES)
-        print("\nProcessing on genes... ({} cpus detected, using {})".format(str(cpu_count()), str(CPU)))
-        TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORD.index),\
-                            total=len(COORD.index))]
+        FUNC = partial(calculation.calculate_transcription_map, COORDINATES,
+                       CORRELATIONS, NB_GENES)
+        print("\nCalculation of the transcription values : ")
+        print("\n     Processing on genes... ({} cpus detected, using {})".format(str(cpu_count()), str(CPU)))
+        TRANSCRIPTION_MAP = [gene for gene in tqdm(pool.imap_unordered(FUNC, COORDINATES.index),\
+                            total=len(COORDINATES.index))]
 
     ### 3D plot
     ###########
     print('\nGeneration of the 3D interactive plot... ', end="")
-    visualization.visualize_4d_genome(COORD, TRANSCRIPTION_MAP, OUTPUT_PATH)
+    visualization.visualize_4d_genome(COORDINATES, TRANSCRIPTION_MAP, OUTPUT_PATH)
     print('The plot is saved in {}'.format(OUTPUT_PATH))
 
     print("\nTotal runtime: {} seconds".format(str(datetime.now() - START_TIME)))
-
-    CORR.to_csv('result/correlation.csv')
-
-    ## ENRICHMENT
-    #############
-    # import gseapy as gp
-    # glist = COORD.index.tolist()
-
-    # enr = gp.enrichr(gene_list=glist,
-    #                  description='pathway_analysis',
-    #                  gene_set='KEGG_2016',
-    #                  outdir='test',
-    #                 )
